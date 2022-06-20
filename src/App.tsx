@@ -1,7 +1,8 @@
 import { Routes, Route, Link } from "react-router-dom";
 import './App.css';
-import Profile from "./components/Profile/Profile";
-import Registration from "./components/Registration/Registration";
+import Profile from "./Pages/Profile";
+import Registration from "./Pages/SignUp";
+import SignIn from "./Pages/SignIn";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<Registration />} />
         <Route path="registration" element={<Registration />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="signin" element={<SignIn/>} />
       </Routes>
     </div>
   );
