@@ -6,6 +6,7 @@ import SignIn from "./Pages/SignIn";
 import HomePage from "./Pages/HomePage";
 import Header from "./Header";
 import Posts from "./Pages/Posts";
+import Confirmation from "./Pages/Confirmation";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="profile" element={<Profile />} />
         <Route path="signin" element={<SignIn/>} />
         <Route path="posts" element={<Posts/>}/>
+        <Route path="/confirmation" element={<Confirmation/>}/>
       </Routes>
     </div>
   );
