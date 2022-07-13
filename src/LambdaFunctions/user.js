@@ -4,7 +4,7 @@ AWS.config.update({
     region: 'us-east-1'
 });
 const dynamodb = new AWS.DynamoDB.DocumentClient();
-const dynamodbTableName = 'users';
+const dynamodbTableName = 'Users';
 const healthPath = '/health';
 const usersPath = '/user';
 
