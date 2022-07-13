@@ -12,10 +12,12 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import UserPool from '../UserPool';
+import UserPool from '../../UserPool';
 import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import { useNavigate } from 'react-router-dom';
 import Amplify, { Auth } from 'aws-amplify';
+import {apiURL, createUser} from '../../Configs/config'
+import axios from 'axios';
 
 const theme = createTheme();
 
@@ -71,10 +73,32 @@ export default function SignUp() {
         console.log(err);
         alert("Couldn't sign up");
       } else {
-        console.log(data);
-        alert('User Added Successfully');
+        let userId = data['userSub']
+        console.log(userId);
+       // console.log(data);
+
+        addUserIntoDB(userId, firstname,lastname, email, mobile);
+
+        alert('User Registered Successfully');
         navigate('/signin')
       }
+    });
+  }
+
+  const addUserIntoDB=(userId, firstname, lastname, email, mobile)=>{
+
+    let url = apiURL + createUser;
+    axios.post(url, {
+      userId: userId,
+      userEmail: email,
+      firstName: firstname,
+      lastName: lastname,
+      mobile: mobile
+    })
+    .then((response) => {
+      console.log(response);
+    }, (error) => {
+      console.log(error);
     });
   }
 
