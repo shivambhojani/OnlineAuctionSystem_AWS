@@ -1,27 +1,31 @@
 import { Routes, Route, Link } from "react-router-dom";
 import './App.css';
-import Profile from "./Pages/Profile";
-import SignUp from "./Pages/SignUp";
-import SignIn from "./Pages/SignIn";
-import HomePage from "./Pages/HomePage";
+import Profile from "./Components/Profile";
+import SignUp from "./Components/Authentication/SignUp";
+import SignIn from "./Components/Authentication/SignIn";
+import HomePage from "./Components/HomePage";
 import Header from "./Header";
-import Posts from "./Pages/Posts";
-import Confirmation from "./Pages/Confirmation";
-import ProductForm from "./Pages/ProductForm";
+import Posts from "./Components/Posts";
+import Confirmation from "./Components/Authentication/Confirmation";
+import { Account } from "./Components/Authentication/Accounts";
+import ProductForm from "./Components/ProductForm";
 
 function App() {
   return (
     <div className="App">
-      <Header/>
-     <Routes>
-        <Route path="/" element={<HomePage/>} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="signin" element={<SignIn/>} />
-        <Route path="posts" element={<Posts/>}/>
-        <Route path="/confirmation" element={<Confirmation/>}/>
-        <Route path="/addProduct" element={<ProductForm/>}/>
-      </Routes>
+      
+      <Account>
+      <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/posts" element={<Posts />} />
+          <Route path="/confirmation" element={<Confirmation />} />
+          <Route path="/addProduct" element={<ProductForm/>}/>
+        </Routes>
+      </Account>
     </div>
   );
 }

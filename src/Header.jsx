@@ -1,4 +1,4 @@
-import * as React from "react";
+import  React, {useContext} from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -6,8 +6,34 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import { AccountContext } from './Components/Authentication/Accounts';
 
 export default function Header() {
+    const [auth, setAuth] = React.useState(true);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const {logout} = useContext(AccountContext);
+
+    const handleChange = (event) => {
+        setAuth(event.target.checked);
+      };
+    
+      const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+      };
+    
+      const handleClose = () => {
+        setAnchorEl(null);
+      };
+
+      const handlelogout = () => {
+        setAnchorEl(null);
+        
+      };
+
     return (
         <AppBar position="static" style={{ background: '#6A5ACD' }}>
             <Toolbar>
@@ -23,13 +49,44 @@ export default function Header() {
 
                 <Typography variant="h4"
                     href="/"
-                    component="div" sx={{ flexGrow: 1, fontFamily: 'monospace',
-                    fontWeight: 700,
-                    letterSpacing: '.3rem',
-}}>
+                    component="div" sx={{
+                        flexGrow: 1, fontFamily: 'monospace',
+                        fontWeight: 700,
+                        letterSpacing: '.3rem',
+                    }}>
                     AUCTPAD
                 </Typography>
-                <Button color="inherit">Login</Button>
+                <div>
+                    <IconButton
+                        size="large"
+                        aria-label="account of current user"
+                        aria-controls="menu-appbar"
+                        aria-haspopup="true"
+                        onClick={handleMenu}
+                        color="inherit"
+                    >
+                        <AccountCircle />
+                    </IconButton>
+                    <Menu
+                        id="menu-appbar"
+                        anchorEl={anchorEl}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+                        <MenuItem onClick={handleClose}>Profile</MenuItem>
+                        <MenuItem onClick={handleClose}>My account</MenuItem>
+                        <MenuItem onClick={logout}>Logout</MenuItem>
+                    </Menu>
+                </div>
             </Toolbar>
         </AppBar>
     );

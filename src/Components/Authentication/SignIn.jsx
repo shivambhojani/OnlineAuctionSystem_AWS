@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useContext } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,10 +13,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import Image from '../../src/assets/online_auction.jpeg';
+import Image from '../../../src/assets/online_auction.jpeg';
 import { AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
-import UserPool from '../UserPool';
-
+import UserPool from '../../UserPool';
+import { AccountContext } from './Accounts';
 
 const theme = createTheme();
 
@@ -25,39 +25,54 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { authenticate } = useContext(AccountContext);
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     console.log("Function called")
 
-    // const data = new FormData(e.currentTarget);
     e.preventDefault();
-    
-    const user = new CognitoUser({
-      Username: email,
-      Pool: UserPool,
-    });
 
-
-    const authDetails = new AuthenticationDetails({
-      Username: email,
-      Password: password,
-    });
-
-    user.authenticateUser(authDetails, {
-      onSuccess: (data) => {
-        console.log('login success', data);
+    authenticate(email, password)
+      .then(data => {
+        console.log('Logged in!', data);
         navigate("/profile");
-      },
-      onFailure: (err) => {
-        console.log('login failure', err);
-        alert("Login Failure")
-      },
-      newPasswordRequired: (data) => {
-        console.log('new password required', data);
-      },
-    });
-  
+      })
+      .catch(err => {
+        console.error('Failed to login!', err);
+      })
+
+
+    // const data = new FormData(e.currentTarget);
+    // e.preventDefault();
+
+    // const user = new CognitoUser({
+    //   Username: email,
+    //   Pool: UserPool,
+    // });
+
+
+    // const authDetails = new AuthenticationDetails({
+    //   Username: email,
+    //   Password: password,
+    // });
+
+    // user.authenticateUser(authDetails, {
+    //   onSuccess: (data) => {
+    //     console.log('login success', data);
+    //     console.log(user.getSession());
+    //     navigate("/profile");
+    //   },
+    //   onFailure: (err) => {
+    //     console.log('login failure', err);
+    //     alert("Login Failure")
+    //   },
+    //   newPasswordRequired: (data) => {
+    //     console.log('new password required', data);
+    //   },
+    // });
+
     // 
   };
 
@@ -95,7 +110,7 @@ export default function SignIn() {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" noValidate  sx={{ mt: 1 }}>
+            <Box component="form" noValidate sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 //required
@@ -130,7 +145,7 @@ export default function SignIn() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
                 onClick={handleSubmit}
-               
+
               >
                 Sign In
               </Button>
@@ -141,7 +156,7 @@ export default function SignIn() {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="/" variant="body2">
+                  <Link href="/signup" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
