@@ -7,6 +7,7 @@ import HomePage from "./Components/HomePage";
 import Header from "./Header";
 import Posts from "./Components/Posts";
 import Confirmation from "./Components/Authentication/Confirmation";
+import MyAccount from "./Components/ProfileManagement/MyAccount";
 import { Account } from "./Components/Authentication/Accounts";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/confirmation" element={<Confirmation />} />
+          <Route path="/myaccount" element={<MyAccount />} />
         </Routes>
       </Account>
     </div>

@@ -9,6 +9,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { useNavigate } from 'react-router-dom';
 import { AccountContext } from './Components/Authentication/Accounts';
 
 export default function Header() {
@@ -16,6 +17,8 @@ export default function Header() {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const {logout} = useContext(AccountContext);
+
+    const navigate = useNavigate();
 
     const handleChange = (event) => {
         setAuth(event.target.checked);
@@ -27,6 +30,10 @@ export default function Header() {
     
       const handleClose = () => {
         setAnchorEl(null);
+      };
+
+       const myAccountClick = () => {
+        navigate("/myaccount");
       };
 
       const handlelogout = () => {
@@ -83,7 +90,7 @@ export default function Header() {
                         onClose={handleClose}
                     >
                         <MenuItem onClick={handleClose}>Profile</MenuItem>
-                        <MenuItem onClick={handleClose}>My account</MenuItem>
+                        <MenuItem onClick={myAccountClick}>My account</MenuItem>
                         <MenuItem onClick={logout}>Logout</MenuItem>
                     </Menu>
                 </div>

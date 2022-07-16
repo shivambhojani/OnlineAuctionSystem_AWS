@@ -14,8 +14,6 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import Image from '../../../src/assets/online_auction.jpeg';
-import { AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
-import UserPool from '../../UserPool';
 import { AccountContext } from './Accounts';
 
 const theme = createTheme();
@@ -37,7 +35,7 @@ export default function SignIn() {
     authenticate(email, password)
       .then(data => {
         console.log('Logged in!', data);
-        navigate("/profile");
+        navigate("/posts");
       })
       .catch(err => {
         console.error('Failed to login!', err);

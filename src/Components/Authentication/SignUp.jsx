@@ -16,7 +16,7 @@ import UserPool from '../../UserPool';
 import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import { useNavigate } from 'react-router-dom';
 import Amplify, { Auth } from 'aws-amplify';
-import {apiURL, createUser} from '../../Configs/config'
+import {apiURL, User} from '../../Configs/config'
 import axios from 'axios';
 
 const theme = createTheme();
@@ -87,7 +87,7 @@ export default function SignUp() {
 
   const addUserIntoDB=(userId, firstname, lastname, email, mobile)=>{
 
-    let url = apiURL + createUser;
+    let url = apiURL + User;
     axios.post(url, {
       userId: userId,
       userEmail: email,
