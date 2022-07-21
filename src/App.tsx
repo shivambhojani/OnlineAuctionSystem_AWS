@@ -9,6 +9,7 @@ import Posts from "./Components/Posts";
 import Confirmation from "./Components/Authentication/Confirmation";
 import MyAccount from "./Components/ProfileManagement/MyAccount";
 import { Account } from "./Components/Authentication/Accounts";
+import ProductForm from "./Components/ProductForm";
 
 function App() {
   return (
@@ -23,7 +24,11 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/confirmation" element={<Confirmation />} />
+<<<<<<< HEAD
           <Route path="/myaccount" element={<MyAccount />} />
+=======
+          <Route path="/addProduct" element={<ProductForm/>}/>
+>>>>>>> main
         </Routes>
       </Account>
     </div>
