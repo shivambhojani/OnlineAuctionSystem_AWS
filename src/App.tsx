@@ -24,11 +24,8 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/confirmation" element={<Confirmation />} />
-<<<<<<< HEAD
           <Route path="/myaccount" element={<MyAccount />} />
-=======
           <Route path="/addProduct" element={<ProductForm/>}/>
->>>>>>> main
         </Routes>
       </Account>
     </div>
