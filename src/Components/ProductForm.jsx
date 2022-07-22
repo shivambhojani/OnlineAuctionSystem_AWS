@@ -16,7 +16,7 @@ export default function ProductForm() {
 
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
-  const [price, setPrice] = useState("");
+  const [baseprice, setbaseprice] = useState("");
   const [image, setImage] = useState("");
 
   const navigate = useNavigate();
@@ -26,14 +26,20 @@ export default function ProductForm() {
       alert("Please upload image");
       return;
     }
-    if (!productName || !productDescription || !price) {
+    if (!productName || !productDescription || !baseprice) {
       alert("Please fill all the requried fields")
     }
     const data = {
       "name": productName,
       "description": productDescription,
-      "price": price,
-      "imgUrl": "https://5409-assignement-2.s3.amazonaws.com/cancel+tickets+click+stream.drawio.png"
+      "baseprice": baseprice,
+      "imgUrl": "https://5409-assignement-2.s3.amazonaws.com/cancel+tickets+click+stream.drawio.png",
+      "productId": "123",
+      "sellerid":"123",
+      "highestbidderid":"123",
+      "sold":false,
+      "timeatproductadd": new Date().getTime(),
+      "timeathighestbid" : "",
     }
     axios.post(baseUrl + "product", data)
       .then(res => {
@@ -103,11 +109,11 @@ export default function ProductForm() {
                 required
                 type="number"
                 fullWidth
-                value={price}
+                value={baseprice}
                 InputProps={{ inputProps: { min: 1 } }}
-                onChange={(e) => setPrice(e.target.value)}
-                name="price"
-                label="price"
+                onChange={(e) => setbaseprice(e.target.value)}
+                name="baseprice"
+                label="Baseprice"
               />
               {/* Image */}
               Add Image:

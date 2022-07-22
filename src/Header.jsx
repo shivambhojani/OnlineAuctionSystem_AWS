@@ -29,10 +29,12 @@ export default function Header() {
       };
     
       const Homepage = () => {
+        setAnchorEl(null);
         navigate("/posts");
       };
 
        const myAccountClick = () => {
+        setAnchorEl(null);
         navigate("/myaccount");
       };
 
