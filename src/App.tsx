@@ -18,7 +18,7 @@ function App() {
       <Account>
       <Header />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/signin" element={<SignIn />} />

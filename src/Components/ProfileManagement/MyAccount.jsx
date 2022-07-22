@@ -6,47 +6,97 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AccountContext } from "../Authentication/Accounts";
-import {apiURL, User} from '../../Configs/config'
+import { apiURL, User, updateuser} from '../../Configs/config'
 import Container from '@mui/material/Container';
 import axios from 'axios';
 const theme = createTheme();
+
 export default function MyAccount() {
 
   const { getSession } = useContext(AccountContext);
-
-  const handleSubmit = (event) => { };
-  const [firstname, setfirstname] = React.useState();
-  const [lastname, setlastname] = React.useState();
-  const [email, setemail] = React.useState();
-  const [mobile, setmobile] = React.useState();
+  const [firstname, setfirstname] = React.useState("");
+  const [lastname, setlastname] = React.useState("");
+  const [email, setemail] = React.useState("");
+  const [mobile, setmobile] = React.useState("");
 
   const [userId, setuserId] = React.useState();
 
-   useEffect(() => {
+  useEffect(() => {
+
     getSession().then((data) => {
-      console.log('Profile Session', data)
+      // console.log('Profile Session', data)
       setuserId(data['accessToken']['payload']['username']);
       console.log(data['accessToken']['payload']['username'])
+    }).catch((err) => {
+      console.log(err);
+    });
+  }, []);
 
-      // const params = new URLSearchParams([['userId', ]]);
-
-      const res = axios.get(apiURL+User+"?userId="+ userId).then((response) => {
+  useEffect(() => {
+    if (userId?.length > 0) {
+      console.log('loggedInUserId', userId);
+      axios.get(apiURL + User + "?userId=" + userId).then((response) => {
         console.log(response);
-
         setfirstname(response['data']['firstName']);
         setlastname(response['data']['lastName']);
         setmobile(response['data']['mobile']);
         setemail(response['data']['userEmail']);
 
+        setTimeout(() => {
+        }, 5000);
+
+        console.log('getuser', response);
+
       }, (error) => {
         console.log(error);
-      });;
+      });
+    }
+  }, [userId]);
 
-      console.log('getuser',res);
-    });
+  const saveUserDetails = () => {
+    if (userId?.length > 0) {
+      axios.put(apiURL + User + "?userId=" + userId, {
+        firstName: firstname,
+        lastName: lastname,
+        mobile: mobile,
+      })
+        .then((res) => {
+          console.log(res.data);
+          alert("Information Saved Successfully")
+        }
+          , (error) => {
+            console.log(error);
+          });
+    }
+    else {
+      alert("Something went wrong while saving the data. Please try again!")
+    }
 
+  }
+  const handleChangeInFirstName = (event) => {
 
-  });
+    const {
+      target: { value },
+    } = event;
+
+    setfirstname(value);
+
+  };
+  const handleChangeInLastName = (event) => {
+
+    const {
+      target: { value },
+    } = event;
+
+    setlastname(value);
+
+  };
+  const handleChangeInMobile = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setmobile(value);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -61,13 +111,15 @@ export default function MyAccount() {
           }}
         >
 
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component="form" noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
+                  InputLabelProps={{ shrink: true }}
+                  onChange={handleChangeInFirstName}
                   autoComplete="given-name"
                   name="firstName"
-                  value={firstname || ''}
+                  value={firstname}
                   required
                   fullWidth
                   id="firstName"
@@ -77,20 +129,24 @@ export default function MyAccount() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  InputLabelProps={{ shrink: true }}
+                  onChange={handleChangeInLastName}
                   required
                   fullWidth
                   id="lastName"
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
-                  value={lastname || ''}
+                  value={lastname}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  InputLabelProps={{ shrink: true }}
+                  onChange={handleChangeInMobile}
                   required
                   fullWidth
-                  value={mobile || ''}
+                  value={mobile}
                   id="mobile"
                   label="Mobile No."
                   name="mobile"
@@ -99,23 +155,27 @@ export default function MyAccount() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  InputLabelProps={{ shrink: true }}
                   required
                   fullWidth
-                  value={email || ''}
+                  value={email}
                   id="email"
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  readonly
+                  InputProps={{
+                    readOnly: true,
+                  }}
                 />
               </Grid>
-              
+
             </Grid>
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={saveUserDetails}
             >
               Save Details
             </Button>
