@@ -12,3 +12,4 @@ export const apiURL = 'https://dec7ccapye.execute-api.us-east-1.amazonaws.com/pr
 //----------------------------------User Path
 
 export const User = "/user"
+export const updateuser = "/updateuser"

@@ -28,8 +28,8 @@ export default function Header() {
         setAnchorEl(event.currentTarget);
       };
     
-      const handleClose = () => {
-        setAnchorEl(null);
+      const Homepage = () => {
+        navigate("/posts");
       };
 
        const myAccountClick = () => {
@@ -87,9 +87,9 @@ export default function Header() {
                             horizontal: 'right',
                         }}
                         open={Boolean(anchorEl)}
-                        onClose={handleClose}
+                        // onClose={handleClose}
                     >
-                        <MenuItem onClick={handleClose}>Profile</MenuItem>
+                        <MenuItem onClick={Homepage}>HomePage</MenuItem>
                         <MenuItem onClick={myAccountClick}>My account</MenuItem>
                         <MenuItem onClick={logout}>Logout</MenuItem>
                     </Menu>
