@@ -9,6 +9,8 @@ const Account = props => {
 
   const navigate = useNavigate();
 
+  const [userId, setuserId] = React.useState("");
+
   const getSession = async () =>
     await new Promise((resolve, reject) => {
       const user = Pool.getCurrentUser();
@@ -34,6 +36,13 @@ const Account = props => {
         onSuccess: data => {
           console.log('onSuccess:', data);
           resolve(data);
+
+          getSession().then((data) => {
+            console.log('Profile Session', data)
+            // setuserId(data['accessToken']['payload']['username']);
+
+            setuserId(data['accessToken']['payload']['username']);
+          });
         },
 
         onFailure: err => {
@@ -47,13 +56,14 @@ const Account = props => {
         }
       });
     });
-  
+
   const logout = () => {
     const user = Pool.getCurrentUser();
     if (user) {
       user.signOut();
+      setuserId("");
       navigate("/signin");
-      console.log('session after logout',user.getSession)
+      console.log('session after logout', user.getSession)
     }
   }
 

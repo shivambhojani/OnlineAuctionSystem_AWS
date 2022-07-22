@@ -9,6 +9,7 @@ export const ClientId = '45o0pivqdhvuhafiohvka32erf'
 
 export const apiURL = 'https://dec7ccapye.execute-api.us-east-1.amazonaws.com/prod'
 
-//----------------------------------CreateUser Path
+//----------------------------------User Path
 
-export const createUser = "/user"
+export const User = "/user"
+export const updateuser = "/updateuser"

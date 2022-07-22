@@ -7,7 +7,9 @@ import HomePage from "./Components/HomePage";
 import Header from "./Header";
 import Posts from "./Components/Posts";
 import Confirmation from "./Components/Authentication/Confirmation";
+import MyAccount from "./Components/ProfileManagement/MyAccount";
 import { Account } from "./Components/Authentication/Accounts";
+import ProductForm from "./Components/ProductForm";
 
 function App() {
   return (
@@ -16,12 +18,14 @@ function App() {
       <Account>
       <Header />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/confirmation" element={<Confirmation />} />
+          <Route path="/myaccount" element={<MyAccount />} />
+          <Route path="/addProduct" element={<ProductForm/>}/>
         </Routes>
       </Account>
     </div>

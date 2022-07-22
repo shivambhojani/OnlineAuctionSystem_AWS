@@ -18,6 +18,13 @@ exports.handler = async function (event) {
         case event.httpMethod === 'POST' && event.path === usersPath:
             response = await saveUser(JSON.parse(event.body));
             break;
+        case event.httpMethod === 'GET' && event.path === usersPath:
+            response = await getUserById(event.queryStringParameters.userId);
+            break;
+        case event.httpMethod === 'PATCH' && event.path === usersPath:
+            const requestBody = JSON.parse(event.body);
+            response = await updateUserByID(event.queryStringParameters.userId, requestBody.firstName, requestBody.lastName, requestBody.mobile);
+            break;
         // case event.httpMethod === 'GET' && event.path === usersPath:
         //     response = await getUsers();
         //     break;
@@ -25,6 +32,50 @@ exports.handler = async function (event) {
             response = buildResponse(404, '404 Not Found');
     }
     return response;
+}
+
+async function updateUserByID(userId, firstName, lastName, mobile) {
+    const params = {
+        TableName: dynamodbTableName,
+        Key: {
+            'userId': userId
+        },
+
+        UpdateExpression: `set firstName = :firstName, lastName = :lastName, mobile = :mobile`,
+
+        ExpressionAttributeValues: {
+            ':firstName': firstName,
+            ':lastName': lastName,
+            ':mobile': mobile,   
+        },
+
+        ReturnValues: 'UPDATED_NEW'
+    
+    }
+    return await dynamodb.update(params).promise().then((response) => {
+        const body = {
+            Operation: 'UPDATE',
+            Message: 'SUCCESS',
+            UpdatedAttributes: response
+          }
+        return buildResponse(200, body);
+    }, (error) => {
+        console.error("Unable to update the user", error);
+    })
+}
+
+async function getUserById(userId) {
+    const params = {
+        TableName: dynamodbTableName,
+        Key: {
+            'userId': userId
+        }
+    }
+    return await dynamodb.get(params).promise().then((response) => {
+        return buildResponse(200, response.Item);
+    }, (error) => {
+        console.error("Unable to fetch the user", error);
+    })
 }
 
 
@@ -50,7 +101,9 @@ function buildResponse(statusCode, body) {
     return {
         statusCode: statusCode,
         headers: {
-            'Content-Type': 'application/json'
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
         },
         body: JSON.stringify(body)
     }
