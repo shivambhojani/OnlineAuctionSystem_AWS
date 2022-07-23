@@ -49,26 +49,42 @@ export default function ProductForm() {
       "name": productName,
       "description": productDescription,
       "baseprice": baseprice,
-      "imgUrl": "https://5409-assignement-2.s3.amazonaws.com/cancel+tickets+click+stream.drawio.png",
+      "imgUrl": "",
       "productId": "123",
       "sellerid":userId,
       "highestbidderid":"123",
       "highestbid":"0",
       "sold":false,
       "timeatproductadd": new Date().getTime(),
+      "imgString": image,
       "highestsellingamount": highestsellingamount
     }
     axios.post(baseUrl + "product", data)
       .then(res => {
         console.log(res.statusText)
         alert("Product added Successfully");
-        window.location.reload(false);
+        // window.location.reload(false);
       })
   };
 
   const imageHandler = (event) => {
-    setImage(event.target.files[0])
+    const img = event.target.files[0];
+    const reader = new FileReader(img);
+    reader.readAsDataURL(img);
+    reader.onload = () => {
+        setImage(reader.result);
+    }
   }
+
+  const fileSelectHandler = (e) =>{
+    const img = e.target.files[0];
+    const reader = new FileReader(img);
+    reader.readAsDataURL(img);
+    reader.onload = () => {
+        setImage(reader.result);
+        console.log(reader.result);
+    }
+}
 
   const fileUploadHandler = () => {
     const fd = new FormData();
