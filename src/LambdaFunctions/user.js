@@ -7,6 +7,7 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 const dynamodbTableName = 'Users';
 const healthPath = '/health';
 const usersPath = '/user';
+const updateuser = '/updateuser';
 
 exports.handler = async function (event) {
     console.log('Request event: ', event);
@@ -21,7 +22,11 @@ exports.handler = async function (event) {
         case event.httpMethod === 'GET' && event.path === usersPath:
             response = await getUserById(event.queryStringParameters.userId);
             break;
-        case event.httpMethod === 'PATCH' && event.path === usersPath:
+        // case event.httpMethod === 'POST' && event.path === updateuser:
+        //     const requestBody = JSON.parse(event.body);
+        //     response = await updateUserByID(event.queryStringParameters.userId, requestBody.firstName, requestBody.lastName, requestBody.mobile);
+        //     break;
+        case event.httpMethod === 'PUT' && event.path === usersPath:
             const requestBody = JSON.parse(event.body);
             response = await updateUserByID(event.queryStringParameters.userId, requestBody.firstName, requestBody.lastName, requestBody.mobile);
             break;
@@ -103,7 +108,7 @@ function buildResponse(statusCode, body) {
         headers: {
             "Access-Control-Allow-Headers": "Content-Type",
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            "Access-Control-Allow-Methods": "*"
         },
         body: JSON.stringify(body)
     }
