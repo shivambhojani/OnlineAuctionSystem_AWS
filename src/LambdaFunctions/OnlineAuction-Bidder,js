@@ -23,7 +23,7 @@ exports.handler = async function (event) {
         //     break;
         case event.httpMethod === 'PUT' && event.path === bidPath:
             const requestBody = JSON.parse(event.body);
-            response = await placeBidByproductID(event.queryStringParameters.productId, requestBody.highestbid, requestBody.highestbidderid, requestBody.sold);
+            response = await placeBidByproductID(event.queryStringParameters.productId, requestBody.highestbid, requestBody.highestbidderid, requestBody.sold, requestBody.timeathighestbid);
             break;
         default:
             response = buildResponse(404, '404 Not Found');
@@ -31,18 +31,19 @@ exports.handler = async function (event) {
     return response;
 }
 
-async function placeBidByproductID(productId, highestbid, highestbidderid, sold) {
+async function placeBidByproductID(productId, highestbid, highestbidderid, sold, timeathighestbid) {
     const params = {
         TableName: dynamodbTableName,
         Key: {
             'productId': productId
         },
-        UpdateExpression: `set highestbid = :highestbid, highestbidderid = :highestbidderid, sold = :sold`,
+        UpdateExpression: `set highestbid = :highestbid, highestbidderid = :highestbidderid, sold = :sold, timeathighestbid =:timeathighestbid`,
 
         ExpressionAttributeValues: {
             ':highestbid': highestbid,
             ':highestbidderid': highestbidderid,
-            ':sold': sold,   
+            ':sold': sold,
+            ':timeathighestbid':timeathighestbid   
         },
 
         ReturnValues: 'UPDATED_NEW'

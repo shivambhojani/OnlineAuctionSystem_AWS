@@ -57,12 +57,14 @@ export default function Posts(props) {
         sethighestbid("Highest Bid Price: " + hprice + "CAD")
     });
 
-    const saveBid = (highestbid, issold, productId) => {
+    const saveBid = (highestbid, issold, productId, timeathighestbid) => {
         if (userId?.length > 0) {
           axios.put(baseUrl + "/bid" + "?productId=" + productId, {
             highestbid: highestbid,
             highestbidderid: userId,
+            timeathighestbid:timeathighestbid,
             sold: issold,
+            
           })
             .then((res) => {
               console.log(res.data);
@@ -84,16 +86,20 @@ export default function Posts(props) {
         highestsellingamount = +highestsellingamount;
         console.log(bid)
         console.log(hbid)
+        let timeathighestbid = new Date().getTime();
 
         if (bid > hbid) {
-            if (bid >= highestsellingamount) {
-                saveBid(bid,true,productId);
-                alert("Congrats! - Product Bought");
-            }
-            else{
-                saveBid(bid,false,productId);
-                alert("Congrats! - You have the highest Bid on this product.");
-            }
+            saveBid(bid,false,productId, timeathighestbid);
+            alert("Congratulations! - You have the highest Bid on this product.");
+
+            // if (bid >= highestsellingamount) {
+            //     saveBid(bid,true,productId);
+            //     alert("Congrats! - Product Bought");
+            // }
+            // else{
+            //     saveBid(bid,false,productId);
+            //     alert("Congrats! - You have the highest Bid on this product.");
+            // }
         }
         else {
             alert("Bidding amount cannot be less than the current highest bid")
