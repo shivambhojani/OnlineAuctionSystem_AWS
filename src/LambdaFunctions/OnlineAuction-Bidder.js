@@ -21,9 +21,9 @@ exports.handler = async function (event) {
         // case event.httpMethod === 'GET' && event.path === usersPath:
         //     response = await getUserById(event.queryStringParameters.userId);
         //     break;
-        case event.httpMethod === 'PUT' && event.path === usersPath:
+        case event.httpMethod === 'PUT' && event.path === bidPath:
             const requestBody = JSON.parse(event.body);
-            response = await updateUserByID(event.queryStringParameters.userId, );
+            response = await placeBidByproductID(event.queryStringParameters.productId, requestBody.highestbid, requestBody.highestbidderid, requestBody.sold);
             break;
         default:
             response = buildResponse(404, '404 Not Found');
@@ -31,19 +31,19 @@ exports.handler = async function (event) {
     return response;
 }
 
-async function updateUserByID(userId, firstName, lastName, mobile) {
+async function placeBidByproductID(productId, highestbid, highestbidderid, sold) {
     const params = {
         TableName: dynamodbTableName,
         Key: {
-            'userId': userId
+            'productId': productId
         },
 
-        UpdateExpression: `set firstName = :firstName, lastName = :lastName, mobile = :mobile`,
+        UpdateExpression: `set highestbid = :highestbid, highestbidderid = :highestbidderid, sold = :sold`,
 
         ExpressionAttributeValues: {
-            ':firstName': firstName,
-            ':lastName': lastName,
-            ':mobile': mobile,   
+            ':highestbid': highestbid,
+            ':highestbidderid': highestbidderid,
+            ':sold': sold,   
         },
 
         ReturnValues: 'UPDATED_NEW'
@@ -57,41 +57,41 @@ async function updateUserByID(userId, firstName, lastName, mobile) {
           }
         return buildResponse(200, body);
     }, (error) => {
-        console.error("Unable to update the user", error);
+        console.error("Unable to record the bid", error);
     })
 }
 
-async function getUserById(userId) {
-    const params = {
-        TableName: dynamodbTableName,
-        Key: {
-            'userId': userId
-        }
-    }
-    return await dynamodb.get(params).promise().then((response) => {
-        return buildResponse(200, response.Item);
-    }, (error) => {
-        console.error("Unable to fetch the user", error);
-    })
-}
+// async function getUserById(userId) {
+//     const params = {
+//         TableName: dynamodbTableName,
+//         Key: {
+//             'userId': userId
+//         }
+//     }
+//     return await dynamodb.get(params).promise().then((response) => {
+//         return buildResponse(200, response.Item);
+//     }, (error) => {
+//         console.error("Unable to fetch the user", error);
+//     })
+// }
 
 
-async function saveUser(requestBody) {
-    const params = {
-        TableName: dynamodbTableName,
-        Item: requestBody
-    }
-    return await dynamodb.put(params).promise().then(() => {
-        const body = {
-            Operation: 'SAVE',
-            Message: 'SUCCESS',
-            Item: requestBody
-        }
-        return buildResponse(200, body);
-    }, (error) => {
-        console.error('Error while saving user', error)
-    })
-}
+// async function saveUser(requestBody) {
+//     const params = {
+//         TableName: dynamodbTableName,
+//         Item: requestBody
+//     }
+//     return await dynamodb.put(params).promise().then(() => {
+//         const body = {
+//             Operation: 'SAVE',
+//             Message: 'SUCCESS',
+//             Item: requestBody
+//         }
+//         return buildResponse(200, body);
+//     }, (error) => {
+//         console.error('Error while saving user', error)
+//     })
+// }
 
 
 function buildResponse(statusCode, body) {
