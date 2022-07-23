@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -9,41 +9,82 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import axios from 'axios';
-
+import { AccountContext } from "../Components/Authentication/Accounts";
 
 export default function ProductForm() {
+  const { getSession } = useContext(AccountContext);
+
   const baseUrl = "https://dec7ccapye.execute-api.us-east-1.amazonaws.com/prod/";
 
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
-  const [price, setPrice] = useState("");
+  const [baseprice, setbaseprice] = useState("");
   const [image, setImage] = useState("");
+  const [highestsellingamount, sethighestsellingamount] = useState("");
+
+  const [userId, setuserId] = React.useState();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+
+    getSession().then((data) => {
+      // console.log('Profile Session', data)
+      setuserId(data['accessToken']['payload']['username']);
+      console.log(data['accessToken']['payload']['username'])
+    }).catch((err) => {
+      console.log(err);
+    });
+  }, []);
 
   const handleSubmit = (e) => {
     if (!image) {
       alert("Please upload image");
       return;
     }
-    if (!productName || !productDescription || !price) {
+    if (!productName || !productDescription || !baseprice) {
       alert("Please fill all the requried fields")
     }
     const data = {
       "name": productName,
       "description": productDescription,
-      "price": price,
-      "imgUrl": "https://5409-assignement-2.s3.amazonaws.com/cancel+tickets+click+stream.drawio.png"
+      "baseprice": baseprice,
+      "imgUrl": "",
+      "productId": "123",
+      "sellerid":userId,
+      "highestbidderid":"123",
+      "highestbid":"0",
+      "sold":false,
+      "timeatproductadd": new Date().getTime(),
+      "imgString": image,
+      "highestsellingamount": highestsellingamount
     }
     axios.post(baseUrl + "product", data)
       .then(res => {
         console.log(res.statusText)
+        alert("Product added Successfully");
+        // window.location.reload(false);
       })
   };
 
   const imageHandler = (event) => {
-    setImage(event.target.files[0])
+    const img = event.target.files[0];
+    const reader = new FileReader(img);
+    reader.readAsDataURL(img);
+    reader.onload = () => {
+        setImage(reader.result);
+    }
   }
+
+  const fileSelectHandler = (e) =>{
+    const img = e.target.files[0];
+    const reader = new FileReader(img);
+    reader.readAsDataURL(img);
+    reader.onload = () => {
+        setImage(reader.result);
+        console.log(reader.result);
+    }
+}
 
   const fileUploadHandler = () => {
     const fd = new FormData();
@@ -103,11 +144,23 @@ export default function ProductForm() {
                 required
                 type="number"
                 fullWidth
-                value={price}
+                value={baseprice}
                 InputProps={{ inputProps: { min: 1 } }}
-                onChange={(e) => setPrice(e.target.value)}
-                name="price"
-                label="price"
+                onChange={(e) => setbaseprice(e.target.value)}
+                name="baseprice"
+                label="Baseprice"
+              />
+               {/* highest selling price */}
+               <TextField
+                margin="normal"
+                required
+                type="number"
+                fullWidth
+                value={highestsellingamount}
+                InputProps={{ inputProps: { min: 1 } }}
+                onChange={(e) => sethighestsellingamount(e.target.value)}
+                name="highestsellingamount"
+                label="Highest Selling Amount"
               />
               {/* Image */}
               Add Image:

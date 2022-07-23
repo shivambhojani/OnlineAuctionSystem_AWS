@@ -1,4 +1,4 @@
-import  React, {useContext} from "react";
+import React, { useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -11,49 +11,47 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useNavigate } from 'react-router-dom';
 import { AccountContext } from './Components/Authentication/Accounts';
+import AddIcon from "@mui/icons-material/Add";
 
 export default function Header() {
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const {logout} = useContext(AccountContext);
+    const { logout } = useContext(AccountContext);
 
     const navigate = useNavigate();
 
     const handleChange = (event) => {
         setAuth(event.target.checked);
-      };
-    
-      const handleMenu = (event) => {
+    };
+
+    const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
-      };
-    
-      const Homepage = () => {
-        navigate("/posts");
-      };
+    };
 
-       const myAccountClick = () => {
-        navigate("/myaccount");
-      };
-
-      const handlelogout = () => {
+    const Homepage = () => {
         setAnchorEl(null);
-        
-      };
+        navigate("/posts");
+    };
+
+    const myAccountClick = () => {
+        setAnchorEl(null);
+        navigate("/myaccount");
+    };
+
+    const addProduct = () => {
+        navigate("/addproduct");
+    };
+
+    const handlelogout = () => {
+        setAnchorEl(null);
+
+    };
 
     return (
         <AppBar position="static" style={{ background: '#6A5ACD' }}>
             <Toolbar>
-                <IconButton
-                    size="xtra-large"
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    sx={{ mr: 2 }}
-                >
-                    <MenuIcon />
-                </IconButton>
-
+               
                 <Typography variant="h4"
                     href="/"
                     component="div" sx={{
@@ -63,6 +61,14 @@ export default function Header() {
                     }}>
                     AUCTPAD
                 </Typography>
+                <MenuItem>
+                    <Button color="inherit" onClick={addProduct}>
+                        {" "}
+                        <AddIcon />
+                        Sell Product
+                    </Button>
+                </MenuItem>
+
                 <div>
                     <IconButton
                         size="large"
@@ -87,7 +93,7 @@ export default function Header() {
                             horizontal: 'right',
                         }}
                         open={Boolean(anchorEl)}
-                        // onClose={handleClose}
+                    // onClose={handleClose}
                     >
                         <MenuItem onClick={Homepage}>HomePage</MenuItem>
                         <MenuItem onClick={myAccountClick}>My account</MenuItem>
