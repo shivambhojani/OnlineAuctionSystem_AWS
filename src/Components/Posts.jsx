@@ -40,7 +40,6 @@ export default function Posts(props) {
       });
     }, []);
 
-
     const baseUrl = "https://dec7ccapye.execute-api.us-east-1.amazonaws.com/prod/"
     useEffect(() => {
         let url = baseUrl + '/auction-products';
@@ -51,7 +50,6 @@ export default function Posts(props) {
             })
             setProductsFetched(true);
         }
-
         let bprice = "40";
         setbaseprice("Base Price: " + bprice + "CAD")
 
@@ -59,9 +57,9 @@ export default function Posts(props) {
         sethighestbid("Highest Bid Price: " + hprice + "CAD")
     });
 
-    const saveBid = (highestbid, issold) => {
+    const saveBid = (highestbid, issold, productId) => {
         if (userId?.length > 0) {
-          axios.put(apiURL + User + "?userId=" + userId, {
+          axios.put(baseUrl + "/bid" + "?productId=" + productId, {
             highestbid: highestbid,
             highestbidderid: userId,
             sold: issold,
@@ -80,7 +78,7 @@ export default function Posts(props) {
     
       }
 
-    function placebid(hbid, highestsellingamount) {
+    function placebid(hbid, highestsellingamount, productId) {
         let bid = +currentbid;
         hbid = +hbid;
         highestsellingamount = +highestsellingamount;
@@ -89,10 +87,11 @@ export default function Posts(props) {
 
         if (bid > hbid) {
             if (bid >= highestsellingamount) {
+                saveBid(bid,true,productId);
                 alert("Congrats! - Product Bought");
-
             }
             else{
+                saveBid(bid,false,productId);
                 alert("Congrats! - You have the highest Bid on this product.");
             }
         }
@@ -158,7 +157,7 @@ export default function Posts(props) {
                                         <Stack spacing={1} alignItems="center">
                                             <TextField id="outlined-basic" label="Bidding Price" variant="outlined" onChange={onChangeBid} />
                                             <Button variant="contained"
-                                                onClick={() => placebid(product.highestbid, product.highestsellingamount)}>Place Bid</Button>
+                                                onClick={() => placebid(product.highestbid, product.highestsellingamount, product.productId)}>Place Bid</Button>
                                         </Stack>
                                     </div>
                                 </Stack>
