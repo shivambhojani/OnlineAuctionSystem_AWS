@@ -40,6 +40,7 @@ export default function ProductForm() {
       "sold":false,
       "timeatproductadd": new Date().getTime(),
       "timeathighestbid" : "",
+      "imgString": image
     }
     axios.post(baseUrl + "product", data)
       .then(res => {
@@ -48,8 +49,24 @@ export default function ProductForm() {
   };
 
   const imageHandler = (event) => {
-    setImage(event.target.files[0])
+    const img = event.target.files[0];
+    const reader = new FileReader(img);
+    debugger;
+    reader.readAsDataURL(img);
+    reader.onload = () => {
+        setImage(reader.result);
+    }
   }
+
+  const fileSelectHandler = (e) =>{
+    const img = e.target.files[0];
+    const reader = new FileReader(img);
+    reader.readAsDataURL(img);
+    reader.onload = () => {
+        setImage(reader.result);
+        console.log(reader.result);
+    }
+}
 
   const fileUploadHandler = () => {
     const fd = new FormData();
