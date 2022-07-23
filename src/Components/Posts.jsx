@@ -132,7 +132,7 @@ export default function Posts(props) {
                                 height="150"
                                 width="150"
                                 margin="15px auto 15px auto"
-                                image={Image}
+                                image={product.imgUrl}
                                 alt={product.productId}
                             />
                             <CardContent>

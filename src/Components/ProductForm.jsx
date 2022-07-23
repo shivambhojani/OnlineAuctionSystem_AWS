@@ -49,7 +49,7 @@ export default function ProductForm() {
       "name": productName,
       "description": productDescription,
       "baseprice": baseprice,
-      "imgUrl": "https://5409-assignement-2.s3.amazonaws.com/cancel+tickets+click+stream.drawio.png",
+      "imgUrl": "",
       "productId": "123",
       "sellerid":userId,
       "highestbidderid":"123",
@@ -63,14 +63,13 @@ export default function ProductForm() {
       .then(res => {
         console.log(res.statusText)
         alert("Product added Successfully");
-        window.location.reload(false);
+        // window.location.reload(false);
       })
   };
 
   const imageHandler = (event) => {
     const img = event.target.files[0];
     const reader = new FileReader(img);
-    debugger;
     reader.readAsDataURL(img);
     reader.onload = () => {
         setImage(reader.result);
