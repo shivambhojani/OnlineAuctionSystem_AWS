@@ -14,6 +14,7 @@ const theme = createTheme();
 export default function MyAccount() {
 
   const { getSession } = useContext(AccountContext);
+  
   const [firstname, setfirstname] = React.useState("");
   const [lastname, setlastname] = React.useState("");
   const [email, setemail] = React.useState("");
