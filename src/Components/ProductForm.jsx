@@ -50,12 +50,14 @@ export default function ProductForm() {
       "description": productDescription,
       "baseprice": baseprice,
       "imgUrl": "",
-      "productId": "123",
+      "productId": "",
       "sellerid":userId,
-      "highestbidderid":"123",
+      "highestbidderid":"",
       "highestbid":"0",
       "sold":false,
       "timeatproductadd": new Date().getTime(),
+      "timeathighestbid": "",
+      "timewhensold": "",
       "imgString": image,
       "highestsellingamount": highestsellingamount
     }
