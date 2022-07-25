@@ -3,6 +3,7 @@ AWS.config.update({
     region: 'us-east-1'
 });
 const dynamodb = new AWS.DynamoDB.DocumentClient();
+const s3 = new AWS.S3();
 const dynamodbTableName = 'Products';
 const healthPath = '/seller-health';
 const productPath = '/product';
@@ -79,9 +80,11 @@ async function scanDynamoRecords(scanParams, itemArray) {
 
 async function saveProduct(requestBody) {
     requestBody.productId = AWS.util.uuid.v4();
-    requestBody.userId = '1';
     requestBody.category = "test";
-    const params = {
+      const resultUrl =   await saveImageToS3(requestBody.productId, requestBody.imgString)
+      delete requestBody["imgString"];
+      requestBody.imgUrl = resultUrl;
+      const params = {
         TableName: dynamodbTableName,
         Item: requestBody
     }
@@ -93,8 +96,39 @@ async function saveProduct(requestBody) {
         }
         return buildResponse(200, body);
     }, (error) => {
-        console.error('Do your custom error handling here. I am just gonna log it: ', error);
+        const body = {
+            Operation: 'SAVE',
+            Message: 'Failure',
+            Error: error
+        }
+        return buildResponse(500, body);
     })
+}
+
+async function saveImageToS3(imgName, imgString) {
+  const decodedImage = new Buffer.from(imgString.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+
+  // Getting the file type, ie: jpeg, png or gif
+  const type = imgString.split(';')[0].split('/')[1];
+    let filePath =  imgName
+    let params = {
+        Body: decodedImage,
+        Bucket: "online-auction-images",
+        Key: filePath,
+        ACL: 'public-read',
+        ContentEncoding: 'base64', 
+        ContentType: `image/${type}` 
+   };
+   let location = '';
+   try {
+    const { Location, Key } = await s3.upload(params).promise();
+    location = Location;
+    key = Key;
+    console.log(location, key);
+  } catch (error) {
+     console.log(error)
+  }
+  return location;
 }
 
 async function modifyProduct(productId, updateKey, updateValue) {
@@ -150,6 +184,7 @@ function buildResponse(statusCode, body) {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE,PATCH"
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        "isBase64Encoded": false
     }
 }
