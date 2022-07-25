@@ -26,11 +26,12 @@ export default function Posts(props) {
     const [search, setSearch] = useState('');
 
     const [products, setProducts] = useState('');
+    const [unsoldproducts, setunsoldproducts] = useState('');
+    var unsoldproductsarray = [];
     const [userId, setuserId] = React.useState();
     const { getSession } = useContext(AccountContext);
   
     useEffect(() => {
-  
       getSession().then((data) => {
         // console.log('Profile Session', data)
         setuserId(data['accessToken']['payload']['username']);
@@ -46,7 +47,6 @@ export default function Posts(props) {
         if (!productsFetched) {
             axios.get(url).then(result => {
                 setProducts(result.data.products);
-
             })
             setProductsFetched(true);
         }
@@ -57,12 +57,26 @@ export default function Posts(props) {
         sethighestbid("Highest Bid Price: " + hprice + "CAD")
     });
 
-    const saveBid = (highestbid, issold, productId) => {
+    useEffect(()=>{
+        if(products.length > 0){
+          
+        for (let i = 0 ; i<products.length; i++){
+            if (products[i].sold === false){
+                console.log(products[i]);
+                unsoldproductsarray.push(products[i])
+            }
+        }
+        setunsoldproducts(unsoldproductsarray);
+        console.log('unsold',unsoldproductsarray)
+    }
+    }, [products])
+
+    const saveBid = (currentbidamount, productId, timeathighestbid) => {
         if (userId?.length > 0) {
           axios.put(baseUrl + "/bid" + "?productId=" + productId, {
-            highestbid: highestbid,
+            highestbid: currentbidamount,
             highestbidderid: userId,
-            sold: issold,
+            timeathighestbid:timeathighestbid
           })
             .then((res) => {
               console.log(res.data);
@@ -78,36 +92,46 @@ export default function Posts(props) {
     
       }
 
-    function placebid(hbid, highestsellingamount, productId) {
-        let bid = +currentbid;
-        hbid = +hbid;
-        highestsellingamount = +highestsellingamount;
-        console.log(bid)
-        console.log(hbid)
+    function placebid(baseprice, highestbid, productId) {
 
-        if (bid > hbid) {
-            if (bid >= highestsellingamount) {
-                saveBid(bid,true,productId);
-                alert("Congrats! - Product Bought");
-            }
-            else{
-                saveBid(bid,false,productId);
-                alert("Congrats! - You have the highest Bid on this product.");
-            }
+        let currentbidamount = +currentbid;
+
+        highestbid = +highestbid;
+        
+        console.log('currentbidamount',currentbidamount)
+        console.log('highestbid',highestbid)
+        let timeathighestbid = new Date().getTime();
+
+        if(currentbidamount > baseprice){
+        if (currentbidamount > highestbid) {
+            saveBid(currentbidamount, productId, timeathighestbid);
+            alert("Congratulations! - You have the highest Bid on this product.");
+
+            // if (bid >= highestsellingamount) {
+            //     saveBid(bid,true,productId);
+            //     alert("Congrats! - Product Bought");
+            // }
+            // else{
+            //     saveBid(bid,false,productId);
+            //     alert("Congrats! - You have the highest Bid on this product.");
+            // }
         }
         else {
             alert("Bidding amount cannot be less than the current highest bid")
         }
 
     }
+    else{
+        alert("Bidding amount cannot be less than the base price")
+    }
+}
     const onChangeBid = (event) => {
-
+   
         const {
             target: { value },
         } = event;
-
         setcurrentbid(value);
-        console.log(currentbid);
+       
 
     };
 
@@ -124,9 +148,9 @@ export default function Posts(props) {
                 // className="bg-gray padding-ub"
                 rowSpacing={{ xs: 5, sm: 5, md: 5, lg: 5, xl: 7 }}
                 columnSpacing={{ xs: 1, sm: 2, md: 5, lg: 6, xl: 8 }}>
-                {products?.length ? products.filter((product) => product.name.toLowerCase().includes(search.toLowerCase())).map((product, index) => (
+                {unsoldproducts?.length ? unsoldproducts.filter((product) => product.name.toLowerCase().includes(search.toLowerCase())).map((product, index) => (
                     <Grid item xl={3} lg={4} md={6} sm={6} xs={11} key={index}>
-                        <Card elevation={7}>
+                        <Card elevation={7} >
                             <CardMedia
                                 component="img"
                                 height="150"
@@ -157,7 +181,7 @@ export default function Posts(props) {
                                         <Stack spacing={1} alignItems="center">
                                             <TextField id="outlined-basic" label="Bidding Price" variant="outlined" onChange={onChangeBid} />
                                             <Button variant="contained"
-                                                onClick={() => placebid(product.highestbid, product.highestsellingamount, product.productId)}>Place Bid</Button>
+                                                onClick={() => placebid(product.baseprice, product.highestbid, product.productId)}>Place Bid</Button>
                                         </Stack>
                                     </div>
                                 </Stack>
