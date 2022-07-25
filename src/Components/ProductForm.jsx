@@ -59,7 +59,7 @@ export default function ProductForm() {
       "timeathighestbid": "",
       "timewhensold": "",
       "imgString": image,
-      "highestsellingamount": highestsellingamount
+      "highestsellingamount": 0
     }
     axios.post(baseUrl + "product", data)
       .then(res => {
@@ -153,7 +153,7 @@ export default function ProductForm() {
                 label="Baseprice"
               />
                {/* highest selling price */}
-               <TextField
+               {/* <TextField
                 margin="normal"
                 required
                 type="number"
@@ -163,7 +163,7 @@ export default function ProductForm() {
                 onChange={(e) => sethighestsellingamount(e.target.value)}
                 name="highestsellingamount"
                 label="Highest Selling Amount"
-              />
+              /> */}
               {/* Image */}
               Add Image:
               <input
