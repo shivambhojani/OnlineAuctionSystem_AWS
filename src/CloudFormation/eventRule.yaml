@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  BidTimeCheckerLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        Code:
+          S3Bucket: lambda-online-auction-cf
+          S3Key: BidTimeCheckerLambdaFunction/index.zip
+        Description: AWS Lambda function
+        FunctionName: 'CF-OnlineAuction-CheckBidTimeSchduler-1'
+        Handler: index.handler
+        MemorySize: 256
+        Role: arn:aws:iam::472317706936:role/LabRole
+        Runtime: nodejs16.x
+        Timeout: 60
+
+  LambdaScehduler:
+    Type: AWS::Events::Rule
+    DependsOn: [BidTimeCheckerLambdaFunction]
+    Properties: 
+      Description: "CF-CheckLastBid"
+      ScheduleExpression: "rate(1 minute)"
+      State: "ENABLED"
+      Targets: 
+        -
+          Arn: "arn:aws:lambda:us-east-1:472317706936:function:CF-OnlineAuction-CheckBidTimeSchduler-1"
+          Id: "CF-OnlineAuction-CheckBidTimeSchduler-1"
+  
+
+  PermissionForEventsToInvokeLambdaCheckBidTimeSchduler: 
+    Type: AWS::Lambda::Permission
+    DependsOn: [BidTimeCheckerLambdaFunction]
+    Properties: 
+      FunctionName: arn:aws:lambda:us-east-1:472317706936:function:CF-OnlineAuction-CheckBidTimeSchduler-1
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: 
+        Fn::GetAtt: 
+          - "LambdaScehduler"
+          - "Arn"
+
+# https://pastebin.com/z335Azdi
+# AWSTemplateFormatVersion: '2010-09-09'
+# Resources:
+#   # IAM settings
+#   MyInstanceProfile:
+#     Type: AWS::IAM::InstanceProfile
+#     Properties: 
+#       Roles:
+#        - LabRole
