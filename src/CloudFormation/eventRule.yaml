@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  CognitoDomain:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Default: onlineauctionpool
+    Description: Enter a string. Must be alpha numeric 3-63 in length.
+  
+Resources:
+  UsersDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: CF_Users
+      AttributeDefinitions:
+        - AttributeName: "userId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "userId"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  
+  ProductsDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: CF_Products
+      AttributeDefinitions:
+        - AttributeName: "productId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "productId"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  BidTimeCheckerLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        Code:
+          S3Bucket: lambda-online-auction-cf
+          S3Key: BidTimeCheckerLambdaFunction/index.zip
+        Description: AWS Lambda function
+        FunctionName: 'CF-OnlineAuction-CheckBidTimeSchduler-1'
+        Handler: index.handler
+        MemorySize: 256
+        Role: arn:aws:iam::472317706936:role/LabRole
+        Runtime: nodejs16.x
+        Timeout: 60
+
+  CognitoAutoConfirmLambda:
+      Type: AWS::Lambda::Function
+      Properties:
+        Code:
+          S3Bucket: lambda-online-auction-cf
+          S3Key: CognitoAutoConfirmer/index.zip
+        Description: AWS Lambda function
+        FunctionName: 'CF-OnlineAuction-CognitoAutoConfirmer'
+        Handler: index.handler
+        MemorySize: 256
+        Role: arn:aws:iam::472317706936:role/LabRole
+        Runtime: nodejs16.x
+        Timeout: 60
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    DependsOn: [CognitoAutoConfirmLambda]
+    Properties:
+      UsernameConfiguration: 
+        CaseSensitive: false
+      AutoVerifiedAttributes:
+        - email
+      UserPoolName: !Sub ${CognitoDomain}-user-pool
+      LambdaConfig:
+        PreSignUp: arn:aws:lambda:us-east-1:472317706936:function:CF-OnlineAuction-CognitoAutoConfirmer
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+          TemporaryPasswordValidityDays: 30
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+
+  LambdaScehduler:
+    Type: AWS::Events::Rule
+    DependsOn: [BidTimeCheckerLambdaFunction]
+    Properties: 
+      Description: "CF-CheckLastBid"
+      ScheduleExpression: "rate(1 minute)"
+      State: "ENABLED"
+      Targets: 
+        -
+          Arn: "arn:aws:lambda:us-east-1:472317706936:function:CF-OnlineAuction-CheckBidTimeSchduler-1"
+          Id: "CF-OnlineAuction-CheckBidTimeSchduler-1"
+  
+
+  PermissionForEventsToInvokeLambdaCheckBidTimeSchduler: 
+    Type: AWS::Lambda::Permission
+    DependsOn: [BidTimeCheckerLambdaFunction]
+    Properties: 
+      FunctionName: arn:aws:lambda:us-east-1:472317706936:function:CF-OnlineAuction-CheckBidTimeSchduler-1
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: 
+        Fn::GetAtt: 
+          - "LambdaScehduler"
+          - "Arn"
+
+  OnlineAuctionBucket:
+    Type: AWS::S3::Bucket
+    Description: Creating Amazon S3 bucket For Storage
+    Properties:
+      BucketName: cfonlineauction
+      AccessControl: PublicReadWrite
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+
+# https://pastebin.com/z335Azdi
+# AWSTemplateFormatVersion: '2010-09-09'
+# Resources:
+#   # IAM settings
+#   MyInstanceProfile:
+#     Type: AWS::IAM::InstanceProfile
+#     Properties: 
+#       Roles:
+#        - LabRole
