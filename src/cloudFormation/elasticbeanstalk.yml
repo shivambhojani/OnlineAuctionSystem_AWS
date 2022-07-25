@@ -1,0 +1,61 @@
+# https://pastebin.com/z335Azdi
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  FrontendApp:
+    Type: AWS::ElasticBeanstalk::Application
+    Properties:
+      Description: AWS Elastic Beanstalk Sample Application
+      ApplicationName: online-auction-frontend
+
+  # eb app version
+  FrontendAppVersion:
+    Type: AWS::ElasticBeanstalk::ApplicationVersion
+    Properties:
+      ApplicationName:
+        Ref: FrontendApp
+      Description: Online Auction Application Version
+      SourceBundle:
+        S3Bucket: grp-39
+        S3Key: build.zip
+
+  # eb configuration template
+  FrontendConfigurationTemplate:
+    Type: AWS::ElasticBeanstalk::ConfigurationTemplate
+    Properties:
+      ApplicationName:
+        Ref: FrontendApp
+      Description: Online Auction Configuration Template
+      OptionSettings:
+      - Namespace: aws:autoscaling:asg
+        OptionName: MinSize
+        Value: '2'
+      - Namespace: aws:autoscaling:asg
+        OptionName: MaxSize
+        Value: '6'
+      - Namespace: aws:elasticbeanstalk:environment
+        OptionName: EnvironmentType
+        Value: LoadBalanced
+      - Namespace: aws:autoscaling:launchconfiguration
+        OptionName: IamInstanceProfile
+        Value:
+          Ref: MyInstanceProfile
+      SolutionStackName: 64bit Amazon Linux 2 v5.5.4 running Node.js 16
+
+  # eb environment
+  FrontendEnvironment:
+    Type: AWS::ElasticBeanstalk::Environment
+    Properties:
+      ApplicationName:
+        Ref: FrontendApp
+      Description: Online auction frontend environment
+      TemplateName:
+        Ref: FrontendConfigurationTemplate
+      VersionLabel:
+        Ref: FrontendAppVersion
+
+  # IAM settings
+  MyInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      Roles:
+       - LabRole
