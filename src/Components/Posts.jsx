@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import { ToastContainer, toast } from 'react-toastify';
 import { AccountContext } from "./Authentication/Accounts";
-import { apiURL, User, updateuser} from '../Configs/config'
+import { apiURL, User, updateuser } from '../Configs/config'
 
 import axios from 'axios';
 
@@ -30,15 +30,15 @@ export default function Posts(props) {
     var unsoldproductsarray = [];
     const [userId, setuserId] = React.useState();
     const { getSession } = useContext(AccountContext);
-  
+
     useEffect(() => {
-      getSession().then((data) => {
-        // console.log('Profile Session', data)
-        setuserId(data['accessToken']['payload']['username']);
-        console.log(data['accessToken']['payload']['username'])
-      }).catch((err) => {
-        console.log(err);
-      });
+        getSession().then((data) => {
+            // console.log('Profile Session', data)
+            setuserId(data['accessToken']['payload']['username']);
+            console.log(data['accessToken']['payload']['username'])
+        }).catch((err) => {
+            console.log(err);
+        });
     }, []);
 
     const baseUrl = "https://dec7ccapye.execute-api.us-east-1.amazonaws.com/prod/"
@@ -57,81 +57,81 @@ export default function Posts(props) {
         sethighestbid("Highest Bid Price: " + hprice + "CAD")
     });
 
-    useEffect(()=>{
-        if(products.length > 0){
-          
-        for (let i = 0 ; i<products.length; i++){
-            if (products[i].sold === false){
-                console.log(products[i]);
-                unsoldproductsarray.push(products[i])
+    useEffect(() => {
+        if (products.length > 0) {
+
+            for (let i = 0; i < products.length; i++) {
+                if (products[i].sold === false && products[i].sellerid !== userId) {
+                    console.log(products[i]);
+                    unsoldproductsarray.push(products[i])
+                }
             }
+            setunsoldproducts(unsoldproductsarray);
+            console.log('unsold', unsoldproductsarray)
         }
-        setunsoldproducts(unsoldproductsarray);
-        console.log('unsold',unsoldproductsarray)
-    }
     }, [products])
 
     const saveBid = (currentbidamount, productId, timeathighestbid) => {
         if (userId?.length > 0) {
-          axios.put(baseUrl + "/bid" + "?productId=" + productId, {
-            highestbid: currentbidamount,
-            highestbidderid: userId,
-            timeathighestbid:timeathighestbid
-          })
-            .then((res) => {
-              console.log(res.data);
-              alert("Information Saved Successfully")
-            }
-              , (error) => {
-                console.log(error);
-              });
+            axios.put(baseUrl + "/bid" + "?productId=" + productId, {
+                highestbid: currentbidamount,
+                highestbidderid: userId,
+                timeathighestbid: timeathighestbid
+            })
+                .then((res) => {
+                    console.log(res.data);
+                    alert("Information Saved Successfully")
+                }
+                    , (error) => {
+                        console.log(error);
+                    });
         }
         else {
-          alert("Something went wrong while saving the data. Please try again!")
+            alert("Something went wrong while saving the data. Please try again!")
         }
-    
-      }
+
+    }
 
     function placebid(baseprice, highestbid, productId) {
 
         let currentbidamount = +currentbid;
 
         highestbid = +highestbid;
-        
-        console.log('currentbidamount',currentbidamount)
-        console.log('highestbid',highestbid)
+
+        console.log('currentbidamount', currentbidamount)
+        console.log('highestbid', highestbid)
         let timeathighestbid = new Date().getTime();
 
-        if(currentbidamount > baseprice){
-        if (currentbidamount > highestbid) {
-            saveBid(currentbidamount, productId, timeathighestbid);
-            alert("Congratulations! - You have the highest Bid on this product.");
+        if (currentbidamount > baseprice) {
+            if (currentbidamount > highestbid) {
+                saveBid(currentbidamount, productId, timeathighestbid);
+                alert("Congratulations! - You have the highest Bid on this product.");
 
-            // if (bid >= highestsellingamount) {
-            //     saveBid(bid,true,productId);
-            //     alert("Congrats! - Product Bought");
-            // }
-            // else{
-            //     saveBid(bid,false,productId);
-            //     alert("Congrats! - You have the highest Bid on this product.");
-            // }
+                // if (bid >= highestsellingamount) {
+                //     saveBid(bid,true,productId);
+                //     alert("Congrats! - Product Bought");
+                // }
+                // else{
+                //     saveBid(bid,false,productId);
+                //     alert("Congrats! - You have the highest Bid on this product.");
+                // }
+            }
+            else {
+                alert("Bidding amount cannot be less than the current highest bid")
+            }
+
         }
         else {
-            alert("Bidding amount cannot be less than the current highest bid")
+            alert("Bidding amount cannot be less than the base price")
         }
-
     }
-    else{
-        alert("Bidding amount cannot be less than the base price")
-    }
-}
     const onChangeBid = (event) => {
-   
+
         const {
             target: { value },
         } = event;
         setcurrentbid(value);
-       
+
 
     };
 
