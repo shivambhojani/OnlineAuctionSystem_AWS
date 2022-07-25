@@ -99,10 +99,13 @@ export default function SignUp() {
           "topicName": userId,
           "userEmail": email
         }).then((response) =>
-          addUserIntoDB(userId, firstname, lastname, email, mobile)
+          console.log(response)
         )
-        alert('success', 'User Registered Successfully');
-        alert('success', "Please confirm your subscription to get emails about the articles you've added and notifying you when you win a product auction.");
+
+        addUserIntoDB(userId, firstname, lastname, email, mobile)
+
+        alert('User Registered Successfully');
+        alert("Please confirm your subscription to get emails about the articles you've added and notifying you when you win a product auction.");
         navigate('/signin')
       }
     });
