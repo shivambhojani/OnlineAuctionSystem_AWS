@@ -55,8 +55,9 @@ export default function MyAccount() {
   }, [userId]);
 
   const saveUserDetails = () => {
+    console.log(apiURL + User + "?userId=" + userId)
     if (userId?.length > 0) {
-      axios.put(apiURL + User + "?userId=" + userId, {
+      axios.post(apiURL + "/updateuser?userId=" + userId, {
         firstName: firstname,
         lastName: lastname,
         mobile: mobile,
