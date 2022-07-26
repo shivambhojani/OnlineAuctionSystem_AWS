@@ -12,12 +12,25 @@ import Menu from '@mui/material/Menu';
 import { useNavigate } from 'react-router-dom';
 import { AccountContext } from './Components/Authentication/Accounts';
 import AddIcon from "@mui/icons-material/Add";
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import { useEffect, useState } from "react";
 
 export default function Header() {
+    const { getSession } = useContext(AccountContext);
+    const [userId, setuserId] = useState();
+    useEffect(() => {
+      getSession().then((data) => {
+        // console.log('Profile Session', data)
+        setuserId(data['accessToken']['payload']['username']);
+        console.log(data['accessToken']['payload']['username'])
+      }).catch((err) => {
+        console.log(err);
+      });
+    }, []);
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const { logout } = useContext(AccountContext);
+    const {logout}  = useContext(AccountContext);
 
     const navigate = useNavigate();
 
@@ -43,12 +56,22 @@ export default function Header() {
         navigate("/addproduct");
     };
 
+    const productBought = () => {
+        navigate("/productsbought");
+    };
+
+    const productsonSale = () => {
+        navigate("/productsonsale");
+    };
+
     const handlelogout = () => {
         setAnchorEl(null);
 
     };
 
     return (
+        
+        <>{String(userId).length > 1 ? 
         <AppBar position="static" style={{ background: '#6A5ACD' }}>
             <Toolbar>
                
@@ -66,6 +89,20 @@ export default function Header() {
                         {" "}
                         <AddIcon />
                         Sell Product
+                    </Button>
+                </MenuItem>
+                <MenuItem>
+                    <Button color="inherit" onClick={productBought}>
+                        {" "}
+                        <ShoppingBagIcon />
+                        Products Bought
+                    </Button>
+                </MenuItem>
+                <MenuItem>
+                    <Button color="inherit" onClick={productsonSale}>
+                        {" "}
+                        <ShoppingBagIcon />
+                        My Sale
                     </Button>
                 </MenuItem>
 
@@ -101,6 +138,7 @@ export default function Header() {
                     </Menu>
                 </div>
             </Toolbar>
-        </AppBar>
+        </AppBar> : null}
+        </>
     );
 }
